@@ -65,6 +65,17 @@ export default function KanbanBoard() {
     })
   )
 
+  const handleRenameTask = (taskId: string, newTitle: string) => {
+    setColumns((prev) =>
+      prev.map((column) => ({
+        ...column,
+        tasks: column.tasks.map((task) =>
+          task.id === taskId ? { ...task, title: newTitle } : task
+        ),
+      }))
+    )
+  }
+
   const findColumnByTaskId = (taskId: string) => {
     return columns.find((column) =>
       column.tasks.some((task) => task.id === taskId)
@@ -177,7 +188,7 @@ export default function KanbanBoard() {
               items={column.tasks.map((t) => t.id)}
               strategy={verticalListSortingStrategy}
             >
-              <KanbanColumn column={column} />
+              <KanbanColumn column={column} onRenameTask={handleRenameTask} />
             </SortableContext>
           ))}
         </div>

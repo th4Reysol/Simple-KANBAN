@@ -6,9 +6,10 @@ import type { Column } from "@/app/page"
 
 interface KanbanColumnProps {
   column: Column
+  onRenameTask?: (taskId: string, newTitle: string) => void
 }
 
-export function KanbanColumn({ column }: KanbanColumnProps) {
+export function KanbanColumn({ column, onRenameTask }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
     id: column.id,
   })
@@ -23,7 +24,7 @@ export function KanbanColumn({ column }: KanbanColumnProps) {
       {/* Tasks Container */}
       <div ref={setNodeRef} className="flex flex-col gap-4 min-h-[300px]">
         {column.tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} onRename={onRenameTask} />
         ))}
       </div>
     </div>
