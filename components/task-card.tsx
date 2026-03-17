@@ -91,7 +91,6 @@ export function TaskCard({ task, isOverlay, onRename }: TaskCardProps) {
           type="text"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
-          onBlur={handleSave}
           onKeyDown={handleKeyDown}
           className="flex-1 bg-white px-2 py-1 rounded border border-[#7BC9A8] text-[#2B5A6E] outline-none focus:ring-2 focus:ring-[#2B5A6E]"
         />
