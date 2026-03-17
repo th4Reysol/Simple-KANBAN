@@ -59,6 +59,7 @@ export default function KanbanBoard() {
   const [columns, setColumns] = useState<Column[]>(initialColumns)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [taskCounter, setTaskCounter] = useState(5) // Start after initial tasks
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -95,6 +96,21 @@ export default function KanbanBoard() {
 
   const handleCancelEdit = () => {
     setEditingTask(null)
+  }
+
+  const handleAddTask = (columnId: string) => {
+    const newTask: Task = {
+      id: `task-${taskCounter}`,
+      title: `New Task ${taskCounter}`,
+    }
+    setTaskCounter((prev) => prev + 1)
+    setColumns((prev) =>
+      prev.map((column) =>
+        column.id === columnId
+          ? { ...column, tasks: [...column.tasks, newTask] }
+          : column
+      )
+    )
   }
 
   const findColumnByTaskId = (taskId: string) => {
@@ -213,6 +229,7 @@ export default function KanbanBoard() {
                 column={column} 
                 onRenameTask={handleRenameTask}
                 onEditClick={handleEditClick}
+                onAddTask={handleAddTask}
               />
             </SortableContext>
           ))}
