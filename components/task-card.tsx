@@ -49,7 +49,16 @@ export function TaskCard({ task, isOverlay, onEditClick }: TaskCardProps) {
         isOverlay && "shadow-xl rotate-3"
       )}
     >
-      {/* Edit button - NOT draggable */}
+      {/* Draggable area - centered text */}
+      <div 
+        {...attributes}
+        {...listeners}
+        className="flex-1 text-center cursor-grab active:cursor-grabbing"
+      >
+        {task.title}
+      </div>
+      
+      {/* Edit button on the right - NOT draggable */}
       <button
         onClick={handleEditClick}
         onPointerDown={(e) => e.stopPropagation()}
@@ -58,15 +67,6 @@ export function TaskCard({ task, isOverlay, onEditClick }: TaskCardProps) {
       >
         <Pencil className="w-4 h-4 text-[#2B5A6E]" />
       </button>
-      
-      {/* Draggable area */}
-      <div 
-        {...attributes}
-        {...listeners}
-        className="flex-1 text-center cursor-grab active:cursor-grabbing"
-      >
-        {task.title}
-      </div>
     </div>
   )
 }
