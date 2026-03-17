@@ -2,14 +2,15 @@
 
 import { useDroppable } from "@dnd-kit/core"
 import { TaskCard } from "./task-card"
-import type { Column } from "@/app/page"
+import type { Column, Task } from "@/app/page"
 
 interface KanbanColumnProps {
   column: Column
   onRenameTask?: (taskId: string, newTitle: string) => void
+  onEditClick?: (task: Task) => void
 }
 
-export function KanbanColumn({ column, onRenameTask }: KanbanColumnProps) {
+export function KanbanColumn({ column, onRenameTask, onEditClick }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
     id: column.id,
   })
@@ -24,7 +25,7 @@ export function KanbanColumn({ column, onRenameTask }: KanbanColumnProps) {
       {/* Tasks Container */}
       <div ref={setNodeRef} className="flex flex-col gap-4 min-h-[300px]">
         {column.tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onRename={onRenameTask} />
+          <TaskCard key={task.id} task={task} onRename={onRenameTask} onEditClick={onEditClick} />
         ))}
       </div>
     </div>

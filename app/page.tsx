@@ -21,6 +21,7 @@ import {
 } from "@dnd-kit/sortable"
 import { KanbanColumn } from "@/components/kanban-column"
 import { TaskCard } from "@/components/task-card"
+import { EditTaskModal } from "@/components/edit-task-modal"
 
 export type Task = {
   id: string
@@ -57,9 +58,14 @@ const initialColumns: Column[] = [
 export default function KanbanBoard() {
   const [columns, setColumns] = useState<Column[]>(initialColumns)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -74,6 +80,21 @@ export default function KanbanBoard() {
         ),
       }))
     )
+  }
+
+  const handleEditClick = (task: Task) => {
+    setEditingTask(task)
+  }
+
+  const handleSaveEdit = (newTitle: string) => {
+    if (editingTask) {
+      handleRenameTask(editingTask.id, newTitle)
+      setEditingTask(null)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingTask(null)
   }
 
   const findColumnByTaskId = (taskId: string) => {
@@ -188,7 +209,11 @@ export default function KanbanBoard() {
               items={column.tasks.map((t) => t.id)}
               strategy={verticalListSortingStrategy}
             >
-              <KanbanColumn column={column} onRenameTask={handleRenameTask} />
+              <KanbanColumn 
+                column={column} 
+                onRenameTask={handleRenameTask}
+                onEditClick={handleEditClick}
+              />
             </SortableContext>
           ))}
         </div>
@@ -197,6 +222,14 @@ export default function KanbanBoard() {
           {activeTask ? <TaskCard task={activeTask} isOverlay /> : null}
         </DragOverlay>
       </DndContext>
+
+      {/* Modal outside of DndContext */}
+      <EditTaskModal
+        isOpen={editingTask !== null}
+        taskTitle={editingTask?.title ?? ""}
+        onSave={handleSaveEdit}
+        onCancel={handleCancelEdit}
+      />
     </div>
   )
 }
