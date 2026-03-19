@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   DndContext,
   DragOverlay,
@@ -55,11 +55,59 @@ const initialColumns: Column[] = [
   },
 ]
 
+const STORAGE_KEY = "kanban-board-data"
+const COUNTER_KEY = "kanban-task-counter"
+
+function loadFromLocalStorage(): { columns: Column[]; counter: number } | null {
+  if (typeof window === "undefined") return null
+  try {
+    const savedColumns = localStorage.getItem(STORAGE_KEY)
+    const savedCounter = localStorage.getItem(COUNTER_KEY)
+    if (savedColumns) {
+      return {
+        columns: JSON.parse(savedColumns),
+        counter: savedCounter ? parseInt(savedCounter, 10) : 5,
+      }
+    }
+  } catch (e) {
+    console.error("Failed to load from localStorage:", e)
+  }
+  return null
+}
+
+function saveToLocalStorage(columns: Column[], counter: number) {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(columns))
+    localStorage.setItem(COUNTER_KEY, counter.toString())
+  } catch (e) {
+    console.error("Failed to save to localStorage:", e)
+  }
+}
+
 export default function KanbanBoard() {
   const [columns, setColumns] = useState<Column[]>(initialColumns)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
-  const [taskCounter, setTaskCounter] = useState(5) // Start after initial tasks
+  const [taskCounter, setTaskCounter] = useState(5)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = loadFromLocalStorage()
+    if (saved) {
+      setColumns(saved.columns)
+      setTaskCounter(saved.counter)
+    }
+    setIsLoaded(true)
+  }, [])
+
+  // Save to localStorage whenever columns or counter changes
+  useEffect(() => {
+    if (isLoaded) {
+      saveToLocalStorage(columns, taskCounter)
+    }
+  }, [columns, taskCounter, isLoaded])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
