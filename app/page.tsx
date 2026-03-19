@@ -98,6 +98,15 @@ export default function KanbanBoard() {
     setEditingTask(null)
   }
 
+  const handleDeleteTask = (taskId: string) => {
+    setColumns((prev) =>
+      prev.map((column) => ({
+        ...column,
+        tasks: column.tasks.filter((task) => task.id !== taskId),
+      }))
+    )
+  }
+
   const handleAddTask = (columnId: string) => {
     const newTask: Task = {
       id: `task-${taskCounter}`,
@@ -230,6 +239,7 @@ export default function KanbanBoard() {
                 onRenameTask={handleRenameTask}
                 onEditClick={handleEditClick}
                 onAddTask={handleAddTask}
+                onDeleteTask={handleDeleteTask}
               />
             </SortableContext>
           ))}

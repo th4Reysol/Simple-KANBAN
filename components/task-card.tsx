@@ -4,16 +4,17 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import type { Task } from "@/app/page"
 import { cn } from "@/lib/utils"
-import { Pencil } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
 
 interface TaskCardProps {
   task: Task
   isOverlay?: boolean
   onRename?: (taskId: string, newTitle: string) => void
   onEditClick?: (task: Task) => void
+  onDelete?: (taskId: string) => void
 }
 
-export function TaskCard({ task, isOverlay, onEditClick }: TaskCardProps) {
+export function TaskCard({ task, isOverlay, onEditClick, onDelete }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -33,6 +34,14 @@ export function TaskCard({ task, isOverlay, onEditClick }: TaskCardProps) {
     e.preventDefault()
     if (onEditClick) {
       onEditClick(task)
+    }
+  }
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (onDelete) {
+      onDelete(task.id)
     }
   }
 
@@ -58,7 +67,7 @@ export function TaskCard({ task, isOverlay, onEditClick }: TaskCardProps) {
         {task.title}
       </div>
       
-      {/* Edit button on the right - NOT draggable */}
+      {/* Edit button - NOT draggable */}
       <button
         onClick={handleEditClick}
         onPointerDown={(e) => e.stopPropagation()}
@@ -66,6 +75,16 @@ export function TaskCard({ task, isOverlay, onEditClick }: TaskCardProps) {
         aria-label="Edit task name"
       >
         <Pencil className="w-4 h-4 text-[#2B5A6E]" />
+      </button>
+
+      {/* Delete button - NOT draggable */}
+      <button
+        onClick={handleDeleteClick}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="p-1.5 rounded hover:bg-[#e57373] transition-colors shrink-0"
+        aria-label="Delete task"
+      >
+        <Trash2 className="w-4 h-4 text-[#2B5A6E]" />
       </button>
     </div>
   )
