@@ -1,6 +1,8 @@
 # Simple-KANBAN
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+This is my maiden Kanban board that I am sure must be valued!
+With an AI assistant, I am updating currently as one of my best portfolio.
 
 ## Built with v0
 
