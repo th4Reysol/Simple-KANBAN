@@ -58,11 +58,11 @@ export function TaskCard({ task, isOverlay, onEditClick, onDelete }: TaskCardPro
         isOverlay && "shadow-xl rotate-3"
       )}
     >
-      {/* Draggable area - centered text */}
+      {/* Draggable area - centered text with word wrap */}
       <div 
         {...attributes}
         {...listeners}
-        className="flex-1 text-center cursor-grab active:cursor-grabbing"
+        className="flex-1 text-center cursor-grab active:cursor-grabbing min-w-0 break-words overflow-hidden"
       >
         {task.title}
       </div>
