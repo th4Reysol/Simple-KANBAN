@@ -264,7 +264,7 @@ export default function KanbanBoard() {
     <div className="min-h-screen bg-white p-8">
       {/* Header */}
       <div className="bg-[#90ee90] py-4 px-8 mb-8">
-        <h1 className="text-4xl font-bold text-center text-black">Kanban Board</h1>
+        <h1 className="text-4xl font-bold text-center text-black">Project Management</h1>
       </div>
 
       {/* Board */}
@@ -282,8 +282,8 @@ export default function KanbanBoard() {
               items={column.tasks.map((t) => t.id)}
               strategy={verticalListSortingStrategy}
             >
-              <KanbanColumn 
-                column={column} 
+              <KanbanColumn
+                column={column}
                 onRenameTask={handleRenameTask}
                 onEditClick={handleEditClick}
                 onAddTask={handleAddTask}
