@@ -86,28 +86,37 @@ function saveToLocalStorage(columns: Column[], counter: number) {
 }
 
 export default function KanbanBoard() {
-  const [columns, setColumns] = useState<Column[]>(initialColumns)
+  const [columns, setColumns] = useState<Column[] | null>(null)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [taskCounter, setTaskCounter] = useState(5)
-  const [isLoaded, setIsLoaded] = useState(false)
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount (only once)
   useEffect(() => {
     const saved = loadFromLocalStorage()
     if (saved) {
       setColumns(saved.columns)
       setTaskCounter(saved.counter)
+    } else {
+      setColumns(initialColumns)
     }
-    setIsLoaded(true)
   }, [])
 
   // Save to localStorage whenever columns or counter changes
   useEffect(() => {
-    if (isLoaded) {
+    if (columns !== null) {
       saveToLocalStorage(columns, taskCounter)
     }
-  }, [columns, taskCounter, isLoaded])
+  }, [columns, taskCounter])
+
+  // Show loading state until data is loaded
+  if (columns === null) {
+    return (
+      <div className="min-h-screen bg-white p-8 flex items-center justify-center">
+        <div className="text-xl text-gray-600">Loading...</div>
+      </div>
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
