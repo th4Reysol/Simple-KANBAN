@@ -273,7 +273,7 @@ export default function KanbanBoard() {
     <div className="min-h-screen bg-white p-8">
       {/* Header */}
       <div className="bg-[#B8D4E8] py-4 px-8 mb-8">
-        <h1 className="text-4xl font-bold text-center text-black">Task Management Board</h1>
+        <h1 className="text-4xl font-bold text-center text-black">Kanban Board</h1>
       </div>
 
       {/* Board */}
