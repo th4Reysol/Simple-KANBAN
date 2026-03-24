@@ -19,15 +19,15 @@ export function KanbanColumn({ column, onRenameTask, onEditClick, onAddTask, onD
   })
 
   return (
-    <div className="bg-[#2B5A6E] rounded-3xl p-6 min-h-[400px]">
+    <div className="bg-white border-2 border-gray-200 rounded-3xl p-6 min-h-[400px] shadow-sm">
       {/* Column Header with Plus Button and Title */}
       <div className="flex items-center justify-center gap-3 mb-6">
         <button
           onClick={() => onAddTask?.(column.id)}
-          className="w-8 h-8 border-2 border-[#B8D4E8] rounded flex items-center justify-center hover:bg-[#3a6d82] transition-colors"
+          className="w-8 h-8 border-2 border-gray-400 rounded flex items-center justify-center hover:bg-gray-100 transition-colors"
           aria-label={`Add task to ${column.title}`}
         >
-          <Plus className="w-5 h-5 text-[#B8D4E8]" />
+          <Plus className="w-5 h-5 text-gray-600" />
         </button>
         <h2 className="text-purple-500 text-xl font-semibold underline">
           {column.title}
