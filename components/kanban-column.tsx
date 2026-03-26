@@ -20,13 +20,8 @@ export function KanbanColumn({ column, onRenameTask, onEditClick, onAddTask, onD
 
   return (
     <div className="bg-[#fff5ee] rounded-3xl p-6 min-h-[400px] border border-gray-200">
-      {/* Column Title */}
-      <h2 className="text-purple-500 text-xl font-semibold underline text-center mb-4">
-        {column.title}
-      </h2>
-      
-      {/* Plus Button aligned to left */}
-      <div className="flex items-center mb-4">
+      {/* Column Header with Plus Button and Title aligned at bottom */}
+      <div className="flex items-end mb-6">
         <button
           onClick={() => onAddTask?.(column.id)}
           className="w-8 h-8 border-2 border-gray-400 rounded flex items-center justify-center hover:bg-gray-100 transition-colors"
@@ -34,6 +29,11 @@ export function KanbanColumn({ column, onRenameTask, onEditClick, onAddTask, onD
         >
           <Plus className="w-5 h-5 text-gray-600" />
         </button>
+        <h2 className="flex-1 text-purple-500 text-xl font-semibold underline text-center">
+          {column.title}
+        </h2>
+        {/* Spacer to balance the layout */}
+        <div className="w-8"></div>
       </div>
 
       {/* Tasks Container */}
