@@ -26,6 +26,7 @@ import { EditTaskModal } from "@/components/edit-task-modal"
 export type Task = {
   id: string
   title: string
+  assignee: string
 }
 
 export type Column = {
@@ -39,19 +40,19 @@ const initialColumns: Column[] = [
     id: "ready",
     title: "Ready",
     tasks: [
-      { id: "task-1", title: "Task Card 1" },
-      { id: "task-2", title: "Task Card 2" },
+      { id: "task-1", title: "Task Card 1", assignee: "" },
+      { id: "task-2", title: "Task Card 2", assignee: "" },
     ],
   },
   {
     id: "in-progress",
     title: "In Progress",
-    tasks: [{ id: "task-3", title: "Task Card 1" }],
+    tasks: [{ id: "task-3", title: "Task Card 1", assignee: "" }],
   },
   {
     id: "complete",
     title: "Complete",
-    tasks: [{ id: "task-4", title: "Task Card 1" }],
+    tasks: [{ id: "task-4", title: "Task Card 1", assignee: "" }],
   },
 ]
 
@@ -131,6 +132,17 @@ export default function KanbanBoard() {
     )
   }
 
+  const handleUpdateAssignee = (taskId: string, newAssignee: string) => {
+    setColumns((prev) =>
+      prev.map((column) => ({
+        ...column,
+        tasks: column.tasks.map((task) =>
+          task.id === taskId ? { ...task, assignee: newAssignee } : task
+        ),
+      }))
+    )
+  }
+
   const handleEditClick = (task: Task) => {
     setEditingTask(task)
   }
@@ -159,6 +171,7 @@ export default function KanbanBoard() {
     const newTask: Task = {
       id: `task-${taskCounter}`,
       title: `New Task ${taskCounter}`,
+      assignee: "",
     }
     setTaskCounter((prev) => prev + 1)
     setColumns((prev) =>
@@ -288,6 +301,7 @@ export default function KanbanBoard() {
                 onEditClick={handleEditClick}
                 onAddTask={handleAddTask}
                 onDeleteTask={handleDeleteTask}
+                onUpdateAssignee={handleUpdateAssignee}
               />
             </SortableContext>
           ))}

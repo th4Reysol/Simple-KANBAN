@@ -11,9 +11,10 @@ interface KanbanColumnProps {
   onEditClick?: (task: Task) => void
   onAddTask?: (columnId: string) => void
   onDeleteTask?: (taskId: string) => void
+  onUpdateAssignee?: (taskId: string, newAssignee: string) => void
 }
 
-export function KanbanColumn({ column, onRenameTask, onEditClick, onAddTask, onDeleteTask }: KanbanColumnProps) {
+export function KanbanColumn({ column, onRenameTask, onEditClick, onAddTask, onDeleteTask, onUpdateAssignee }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
     id: column.id,
   })
@@ -39,7 +40,7 @@ export function KanbanColumn({ column, onRenameTask, onEditClick, onAddTask, onD
       {/* Tasks Container */}
       <div ref={setNodeRef} className="flex flex-col gap-4 min-h-[300px]">
         {column.tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onRename={onRenameTask} onEditClick={onEditClick} onDelete={onDeleteTask} />
+          <TaskCard key={task.id} task={task} onRename={onRenameTask} onEditClick={onEditClick} onDelete={onDeleteTask} onUpdateAssignee={onUpdateAssignee} />
         ))}
       </div>
     </div>
