@@ -50,6 +50,11 @@ const initialColumns: Column[] = [
     tasks: [{ id: "task-3", title: "Task Card 1", assignee: "" }],
   },
   {
+    id: "reviewing",
+    title: "Reviewing",
+    tasks: [],
+  },
+  {
     id: "complete",
     title: "Complete",
     tasks: [{ id: "task-4", title: "Task Card 1", assignee: "" }],
@@ -288,7 +293,7 @@ export default function KanbanBoard() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {columns.map((column) => (
             <SortableContext
               key={column.id}
