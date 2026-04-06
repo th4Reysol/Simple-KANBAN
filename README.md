@@ -1,3 +1,7 @@
+# Update History
+The latest version is below
+https://github.com/th4Reysol/Simple-KANBAN/tree/v0/makePrototype
+
 # Simple-KANBAN
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
