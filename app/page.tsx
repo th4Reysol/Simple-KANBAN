@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   DndContext,
   DragOverlay,
@@ -26,6 +26,7 @@ import { EditTaskModal } from "@/components/edit-task-modal"
 export type Task = {
   id: string
   title: string
+  assignee: string
 }
 
 export type Column = {
@@ -39,27 +40,80 @@ const initialColumns: Column[] = [
     id: "ready",
     title: "Ready",
     tasks: [
-      { id: "task-1", title: "Task Card 1" },
-      { id: "task-2", title: "Task Card 2" },
+      { id: "task-1", title: "Task Card 1", assignee: "" },
+      { id: "task-2", title: "Task Card 2", assignee: "" },
     ],
   },
   {
     id: "in-progress",
     title: "In Progress",
-    tasks: [{ id: "task-3", title: "Task Card 1" }],
+    tasks: [{ id: "task-3", title: "Task Card 1", assignee: "" }],
+  },
+  {
+    id: "reviewing",
+    title: "Reviewing",
+    tasks: [],
   },
   {
     id: "complete",
     title: "Complete",
-    tasks: [{ id: "task-4", title: "Task Card 1" }],
+    tasks: [{ id: "task-4", title: "Task Card 1", assignee: "" }],
   },
 ]
+
+const STORAGE_KEY = "kanban-board-data"
+const COUNTER_KEY = "kanban-task-counter"
+
+function loadFromLocalStorage(): { columns: Column[]; counter: number } | null {
+  if (typeof window === "undefined") return null
+  try {
+    const savedColumns = localStorage.getItem(STORAGE_KEY)
+    const savedCounter = localStorage.getItem(COUNTER_KEY)
+    if (savedColumns) {
+      return {
+        columns: JSON.parse(savedColumns),
+        counter: savedCounter ? parseInt(savedCounter, 10) : 5,
+      }
+    }
+  } catch (e) {
+    console.error("Failed to load from localStorage:", e)
+  }
+  return null
+}
+
+function saveToLocalStorage(columns: Column[], counter: number) {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(columns))
+    localStorage.setItem(COUNTER_KEY, counter.toString())
+  } catch (e) {
+    console.error("Failed to save to localStorage:", e)
+  }
+}
 
 export default function KanbanBoard() {
   const [columns, setColumns] = useState<Column[]>(initialColumns)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
-  const [taskCounter, setTaskCounter] = useState(5) // Start after initial tasks
+  const [taskCounter, setTaskCounter] = useState(5)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Load from localStorage on mount (only once)
+  useEffect(() => {
+    const saved = loadFromLocalStorage()
+    if (saved) {
+      setColumns(saved.columns)
+      setTaskCounter(saved.counter)
+    }
+    setIsLoaded(true)
+  }, [])
+
+  // Save to localStorage whenever columns or counter changes (only after initial load)
+  useEffect(() => {
+    if (isLoaded) {
+      saveToLocalStorage(columns, taskCounter)
+    }
+  }, [columns, taskCounter, isLoaded])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -83,6 +137,17 @@ export default function KanbanBoard() {
     )
   }
 
+  const handleUpdateAssignee = (taskId: string, newAssignee: string) => {
+    setColumns((prev) =>
+      prev.map((column) => ({
+        ...column,
+        tasks: column.tasks.map((task) =>
+          task.id === taskId ? { ...task, assignee: newAssignee } : task
+        ),
+      }))
+    )
+  }
+
   const handleEditClick = (task: Task) => {
     setEditingTask(task)
   }
@@ -98,10 +163,20 @@ export default function KanbanBoard() {
     setEditingTask(null)
   }
 
+  const handleDeleteTask = (taskId: string) => {
+    setColumns((prev) =>
+      prev.map((column) => ({
+        ...column,
+        tasks: column.tasks.filter((task) => task.id !== taskId),
+      }))
+    )
+  }
+
   const handleAddTask = (columnId: string) => {
     const newTask: Task = {
       id: `task-${taskCounter}`,
       title: `New Task ${taskCounter}`,
+      assignee: "",
     }
     setTaskCounter((prev) => prev + 1)
     setColumns((prev) =>
@@ -206,8 +281,8 @@ export default function KanbanBoard() {
   return (
     <div className="min-h-screen bg-white p-8">
       {/* Header */}
-      <div className="bg-[#B8D4E8] py-4 px-8 mb-8">
-        <h1 className="text-4xl font-bold text-center text-black">Kanban Board</h1>
+      <div className="bg-[#90ee90] py-4 px-8 mb-8">
+        <h1 className="text-4xl font-bold text-center text-black">Project Management</h1>
       </div>
 
       {/* Board */}
@@ -218,18 +293,20 @@ export default function KanbanBoard() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {columns.map((column) => (
             <SortableContext
               key={column.id}
               items={column.tasks.map((t) => t.id)}
               strategy={verticalListSortingStrategy}
             >
-              <KanbanColumn 
-                column={column} 
+              <KanbanColumn
+                column={column}
                 onRenameTask={handleRenameTask}
                 onEditClick={handleEditClick}
                 onAddTask={handleAddTask}
+                onDeleteTask={handleDeleteTask}
+                onUpdateAssignee={handleUpdateAssignee}
               />
             </SortableContext>
           ))}

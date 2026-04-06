@@ -3,6 +3,10 @@ The latest version is below
 https://github.com/th4Reysol/Simple-KANBAN/tree/v0/makePrototype
 
 # Simple-KANBAN
+Here is a latest version of my Simple-KANBAN app.
+Keep your eyes on this branch, not on any other branches!
+
+# Simple-KANBAN
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
 This is my maiden Kanban board that I am sure must be valued!
