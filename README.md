@@ -1,5 +1,5 @@
 # Update History
-The latest version is below
+The latest version is being developed below.
 https://github.com/th4Reysol/Simple-KANBAN/tree/v0/makePrototype
 
 # Simple-KANBAN
