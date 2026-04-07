@@ -101,9 +101,13 @@ export default function KanbanBoard() {
   // Load from localStorage on mount (only once)
   useEffect(() => {
     const saved = loadFromLocalStorage()
+    console.log("[v0] Loading from localStorage:", saved)
     if (saved) {
       setColumns(saved.columns)
       setTaskCounter(saved.counter)
+      console.log("[v0] Restored columns from localStorage")
+    } else {
+      console.log("[v0] No saved data found, using initial columns")
     }
     setIsLoaded(true)
   }, [])
@@ -112,6 +116,7 @@ export default function KanbanBoard() {
   useEffect(() => {
     if (isLoaded) {
       saveToLocalStorage(columns, taskCounter)
+      console.log("[v0] Saved to localStorage:", { columns, taskCounter })
     }
   }, [columns, taskCounter, isLoaded])
 
