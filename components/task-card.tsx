@@ -1,21 +1,36 @@
 "use client"
 
+import { useState } from "react"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import type { Task } from "@/app/page"
+import type { Task, Column } from "@/app/page"
 import { cn } from "@/lib/utils"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, ArrowRightLeft } from "lucide-react"
 
 interface TaskCardProps {
   task: Task
   isOverlay?: boolean
+  columns?: Column[]
+  currentColumnId?: string
   onRename?: (taskId: string, newTitle: string) => void
   onEditClick?: (task: Task) => void
   onDelete?: (taskId: string) => void
   onUpdateAssignee?: (taskId: string, newAssignee: string) => void
+  onMoveTask?: (taskId: string, toColumnId: string) => void
 }
 
-export function TaskCard({ task, isOverlay, onEditClick, onDelete, onUpdateAssignee }: TaskCardProps) {
+export function TaskCard({
+  task,
+  isOverlay,
+  columns,
+  currentColumnId,
+  onEditClick,
+  onDelete,
+  onUpdateAssignee,
+  onMoveTask,
+}: TaskCardProps) {
+  const [showMoveMenu, setShowMoveMenu] = useState(false)
+
   const {
     attributes,
     listeners,
@@ -33,24 +48,29 @@ export function TaskCard({ task, isOverlay, onEditClick, onDelete, onUpdateAssig
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    if (onEditClick) {
-      onEditClick(task)
-    }
+    if (onEditClick) onEditClick(task)
   }
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    if (onDelete) {
-      onDelete(task.id)
+    if (onDelete) onDelete(task.id)
+  }
+
+  const handleMoveSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const toColumnId = e.target.value
+    if (toColumnId && onMoveTask) {
+      onMoveTask(task.id, toColumnId)
     }
+    setShowMoveMenu(false)
   }
 
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (onUpdateAssignee) {
-      onUpdateAssignee(task.id, e.target.value)
-    }
+    if (onUpdateAssignee) onUpdateAssignee(task.id, e.target.value)
   }
+
+  // 移動先の選択肢（現在のカラムは除く）
+  const moveTargetColumns = columns?.filter((c) => c.id !== currentColumnId) ?? []
 
   return (
     <div
@@ -65,18 +85,18 @@ export function TaskCard({ task, isOverlay, onEditClick, onDelete, onUpdateAssig
         isOverlay && "shadow-xl rotate-3"
       )}
     >
-      {/* Top row with task title and action buttons */}
+      {/* Top row */}
       <div className="flex items-center gap-3">
-        {/* Draggable area - centered text with word wrap */}
-        <div 
+        {/* Draggable area */}
+        <div
           {...attributes}
           {...listeners}
           className="flex-1 text-center cursor-grab active:cursor-grabbing min-w-0 break-words overflow-hidden"
         >
           {task.title}
         </div>
-        
-        {/* Edit button - NOT draggable */}
+
+        {/* Edit button */}
         <button
           onClick={handleEditClick}
           onPointerDown={(e) => e.stopPropagation()}
@@ -86,7 +106,7 @@ export function TaskCard({ task, isOverlay, onEditClick, onDelete, onUpdateAssig
           <Pencil className="w-4 h-4 text-[#2B5A6E]" />
         </button>
 
-        {/* Delete button - NOT draggable */}
+        {/* Delete button */}
         <button
           onClick={handleDeleteClick}
           onPointerDown={(e) => e.stopPropagation()}
@@ -97,12 +117,48 @@ export function TaskCard({ task, isOverlay, onEditClick, onDelete, onUpdateAssig
         </button>
       </div>
 
+      {/* Move button - スマホのみ表示 */}
+      {!isOverlay && moveTargetColumns.length > 0 && (
+        <div
+          className="md:hidden"
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          {showMoveMenu ? (
+            <select
+              autoFocus
+              defaultValue=""
+              onChange={handleMoveSelect}
+              onBlur={() => setShowMoveMenu(false)}
+              className="w-full px-2 py-1.5 text-sm bg-white border border-[#7BC9A8] rounded focus:outline-none text-[#2B5A6E]"
+            >
+              <option value="" disabled>移動先を選択...</option>
+              {moveTargetColumns.map((col) => (
+                <option key={col.id} value={col.id}>
+                  → {col.title}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowMoveMenu(true)
+              }}
+              className="w-full flex items-center justify-center gap-2 py-1.5 text-sm bg-white/60 border border-[#7BC9A8] rounded hover:bg-white transition-colors text-[#2B5A6E]"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" />
+              移動
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Person-in-charge input */}
-      <div 
+      <div
         className="flex flex-col gap-1"
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <label 
+        <label
           htmlFor={`assignee-${task.id}`}
           className="text-xs text-[#2B5A6E]/70 font-normal"
         >
