@@ -193,6 +193,27 @@ export default function KanbanBoard() {
     )
   }
 
+  const handleMoveTask = (taskId: string, toColumnId: string) => {
+    setColumns((prev) => {
+      const fromColumn = prev.find((col) =>
+        col.tasks.some((t) => t.id === taskId)
+      )
+      if (!fromColumn) return prev
+      const task = fromColumn.tasks.find((t) => t.id === taskId)
+      if (!task) return prev
+
+      return prev.map((col) => {
+        if (col.id === fromColumn.id) {
+          return { ...col, tasks: col.tasks.filter((t) => t.id !== taskId) }
+        }
+        if (col.id === toColumnId) {
+          return { ...col, tasks: [...col.tasks, task] }
+        }
+        return col
+      })
+    })
+  }
+
   const findColumnByTaskId = (taskId: string) => {
     return columns.find((column) =>
       column.tasks.some((task) => task.id === taskId)
@@ -307,11 +328,13 @@ export default function KanbanBoard() {
             >
               <KanbanColumn
                 column={column}
+                columns={columns}          // 追加
                 onRenameTask={handleRenameTask}
                 onEditClick={handleEditClick}
                 onAddTask={handleAddTask}
                 onDeleteTask={handleDeleteTask}
                 onUpdateAssignee={handleUpdateAssignee}
+                onMoveTask={handleMoveTask}  // 追加
               />
             </SortableContext>
           ))}

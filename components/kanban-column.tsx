@@ -7,21 +7,29 @@ import type { Column, Task } from "@/app/page"
 
 interface KanbanColumnProps {
   column: Column
+  columns?: Column[]          // 追加
   onRenameTask?: (taskId: string, newTitle: string) => void
   onEditClick?: (task: Task) => void
   onAddTask?: (columnId: string) => void
   onDeleteTask?: (taskId: string) => void
   onUpdateAssignee?: (taskId: string, newAssignee: string) => void
+  onMoveTask?: (taskId: string, toColumnId: string) => void  // 追加
 }
 
-export function KanbanColumn({ column, onRenameTask, onEditClick, onAddTask, onDeleteTask, onUpdateAssignee }: KanbanColumnProps) {
-  const { setNodeRef } = useDroppable({
-    id: column.id,
-  })
+export function KanbanColumn({
+  column,
+  columns,
+  onRenameTask,
+  onEditClick,
+  onAddTask,
+  onDeleteTask,
+  onUpdateAssignee,
+  onMoveTask,
+}: KanbanColumnProps) {
+  const { setNodeRef } = useDroppable({ id: column.id })
 
   return (
     <div className="bg-[#fff5ee] rounded-3xl p-6 min-h-[400px] border border-gray-200">
-      {/* Column Header with Plus Button and Title aligned at bottom */}
       <div className="flex items-end mb-6">
         <button
           onClick={() => onAddTask?.(column.id)}
@@ -33,14 +41,22 @@ export function KanbanColumn({ column, onRenameTask, onEditClick, onAddTask, onD
         <h2 className="flex-1 text-purple-500 text-xl font-semibold underline text-center">
           {column.title}
         </h2>
-        {/* Spacer to balance the layout */}
         <div className="w-8"></div>
       </div>
 
-      {/* Tasks Container */}
       <div ref={setNodeRef} className="flex flex-col gap-4 min-h-[300px]">
         {column.tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onRename={onRenameTask} onEditClick={onEditClick} onDelete={onDeleteTask} onUpdateAssignee={onUpdateAssignee} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            columns={columns}
+            currentColumnId={column.id}
+            onRename={onRenameTask}
+            onEditClick={onEditClick}
+            onDelete={onDeleteTask}
+            onUpdateAssignee={onUpdateAssignee}
+            onMoveTask={onMoveTask}
+          />
         ))}
       </div>
     </div>
